@@ -79,13 +79,25 @@ def read_file(file_name):
 
 def write_file(file_name, lst):
     res = read_file(file_name)
-    for el in res:
-        if el["Телефон"] == str(lst[2]):
-            print("Такой телофон уже есть")
-            return
-
     obj = {"Имя": lst[0], "Фамилия": lst[1], "Телефон": lst[2]}
     res.append(obj)
+
+    file_is_empty = False
+    with open(file_name, "r", encoding='utf-8') as data:
+        f_reader = DictReader(data)
+        if len(list(f_reader)) == 0:
+            file_is_empty = True
+
+    if file_is_empty:
+        with open(file_name, "w", encoding='utf-8', newline='') as data:
+            f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+            f_writer.writeheader()
+    else:
+        for el in res:
+            if el["Телефон"] == str(lst[2]):
+                print("Такой телефон уже есть")
+                return
+
     with open(file_name, "w", encoding='utf-8', newline='') as data:
         f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
         f_writer.writeheader()
@@ -94,13 +106,13 @@ def write_file(file_name, lst):
 
 def search_in_file(file_name):
     while True:
-        print("----------------")
-        print("Выберите критерий поиска:")
-        print("1 - по имени")
-        print("2 - по фамилии")
-        print("3 - по номеру телефона")
-        criteria = input("Критерий поиска: ")
-        print("----------------")
+        print("      ----------------")
+        print("      | Выберите критерий поиска:")
+        print("      | 1 - по имени")
+        print("      | 2 - по фамилии")
+        print("      | 3 - по номеру телефона")
+        criteria = input("      | Критерий поиска: ")
+        print("      ----------------")
         match criteria:
             case "1":
                 field_name = "Имя"
@@ -118,7 +130,6 @@ def search_in_file(file_name):
                 print("Выбран неверный критерий")
 
     data_dictionary = read_file(file_name)
-
     res_list = list()
 
     # поиск всех вхождений искомого значения
@@ -143,6 +154,11 @@ def copy_file(file_name):
         f_reader = DictReader(data)
         gen = (row for idx, row in enumerate(f_reader) if idx == line_number)
         one_line = dict(*gen)
+
+    if not exists(new_file_name):
+        with open(new_file_name, "w", encoding='utf-8') as data:
+            f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+            f_writer.writeheader()
 
     file_is_empty = False
     with open(new_file_name, "r", encoding='utf-8') as data:
@@ -170,36 +186,46 @@ def copy_file(file_name):
 #
 #
 
+phonebook = './phonebook.py'
+
 while True:
-    print("Доступные команды: q - выход, w - запись, r - чтение, s - поиск, c - копирование")
-    command = input("Введите команду: ")
+    print()
+    print("      -----------------------------")
+    print("      | Доступные команды: q - выход, w - запись, r - чтение, s - поиск, c - копирование")
+    command = input("      | Введите команду: ")
+    print("      -----------------------------")
+    print()
     match (command):
         case "q":
             break
 
         case "w":
-            if not exists(file_name):
-                create_file(file_name)
-            write_file(file_name, get_info())
+            if not exists(phonebook):
+                create_file(phonebook)
+            write_file(phonebook, get_info())
             
         case "r":
-            if not exists(file_name):
+            if not exists(phonebook):
                 print("Нет файла для чтения. Создайте файл справочника")
                 continue
-            output = read_file(file_name)
+            output = read_file(phonebook)
             for i in range(len(output)):
                 print(output[i])
         
         case "s":
-            if not exists(file_name):
+            if not exists(phonebook):
                 print("Поиск отменен. Отсутствует файл. Создайте файл справочника")
                 continue
-            output = search_in_file(file_name)
+            output = search_in_file(phonebook)
+            print()
             for i in range(len(output)):
                 print(output[i])
 
         case "c":
-            if not exists(file_name):
+            if not exists(phonebook):
                 print("Копирование невозможно. Файл отсутствует. Создайте файл справочника")
                 continue
-            copy_file(file_name)
+            copy_file(phonebook)
+        
+        case _:
+            print("Введена неверная команда")
