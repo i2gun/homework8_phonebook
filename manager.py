@@ -166,3 +166,40 @@ def copy_file(file_name):
         f_writer.writerow(one_line)
         print(one_line)
 
+#===========   Основная программа  =============================
+#
+#
+
+while True:
+    print("Доступные команды: q - выход, w - запись, r - чтение, s - поиск, c - копирование")
+    command = input("Введите команду: ")
+    match (command):
+        case "q":
+            break
+
+        case "w":
+            if not exists(file_name):
+                create_file(file_name)
+            write_file(file_name, get_info())
+            
+        case "r":
+            if not exists(file_name):
+                print("Нет файла для чтения. Создайте файл справочника")
+                continue
+            output = read_file(file_name)
+            for i in range(len(output)):
+                print(output[i])
+        
+        case "s":
+            if not exists(file_name):
+                print("Поиск отменен. Отсутствует файл. Создайте файл справочника")
+                continue
+            output = search_in_file(file_name)
+            for i in range(len(output)):
+                print(output[i])
+
+        case "c":
+            if not exists(file_name):
+                print("Копирование невозможно. Файл отсутствует. Создайте файл справочника")
+                continue
+            copy_file(file_name)
