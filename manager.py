@@ -33,3 +33,24 @@ class LenNameError(Exception):
 #===========   Используемые функции  ==============================
 #
 #
+
+#----- check_criteria(), get_valid_data() - проверка валидности ---
+
+def check_criteria(data, criteria):
+    if criteria == "имя" or criteria == "фамилию":
+        return len(data) < 2
+    elif criteria == "номер телефона":
+        return len(str(data)) != 11
+
+
+def get_valid_data(msg: str, exception_type: Exception) -> str:
+    while True:
+        try:
+            data = input("Введите " + msg + ": ")
+            if check_criteria(data, msg):
+                raise exception_type
+            else:
+                return data
+        except exception_type.__class__ as err:
+            print(err)
+            continue
